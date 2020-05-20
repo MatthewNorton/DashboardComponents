@@ -34,8 +34,8 @@ class FilePicker extends FlowComponent {
 
         let filePick: any;
         const caption: string = this.getAttribute('title') || 'Select File';
-        const width = (this.model.width > 99 ? this.model.width : 100) + 'px';
-        const height = (this.model.height > 99 ? this.model.height : 100)  + 'px';
+        const width = (this.model.width > 99 ? this.model.width + 'px' : '100%');
+        const height = (this.model.height > 99 ? this.model.height + 'px' : '100%');
 
         const style: any = {};
         style.width = width;
@@ -67,6 +67,12 @@ class FilePicker extends FlowComponent {
                 if (this.isImage(mimeType)) {
                     content = (
                         <img
+                            style={{
+                                maxHeight: '100%',
+                                maxWidth: '100%',
+                                width: 'auto',
+                                OObjectFit: 'cover',
+                            }}
                             ref={(element: HTMLImageElement) => {this.img = element; }}
                             className="file-picker-image"
                             src={fileContent}
@@ -123,13 +129,13 @@ class FilePicker extends FlowComponent {
 
         // need to check on IE compatibility here - i think aspect ration is wrong in IE
         if (width >= height) {
-            this.img.style.width = '100%';
-            this.img.style.height = 'auto';
-            this.imgDiv.style.flexDirection = 'column';
+            // this.img.style.width = '100%';
+            // this.img.style.height = 'auto';
+            // this.imgDiv.style.flexDirection = 'column';
         } else {
-            this.img.style.width = 'auto';
-            this.img.style.height = '100%';
-            this.imgDiv.style.flexDirection = 'row';
+            // this.img.style.width = 'auto';
+            // this.img.style.height = '100%';
+            // this.imgDiv.style.flexDirection = 'row';
         }
     }
 
@@ -166,8 +172,12 @@ class FilePicker extends FlowComponent {
             const typ: string = file.type;
             const size: number = file.size;
 
-            if (this.isImage(typ) && parseInt(this.getAttribute('imageSize', '0')) > 0) {
-                dataURL = await this.ResizeBase64Img(dataURL, parseInt(this.getAttribute('imageSize', '0')));
+            if (this.isImage(typ)) {
+                let imgSize: number = 200;
+                if (parseInt(this.getAttribute('imageSize', '0')) > 0) {
+                    imgSize = parseInt(this.getAttribute('imageSize', '0'));
+                }
+                dataURL = await this.ResizeBase64Img(dataURL, imgSize);
             }
 
             let objData: any;
